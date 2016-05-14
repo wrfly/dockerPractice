@@ -88,5 +88,20 @@ function Error(){
 	esac
 }
 
+function json(){
+	read raw
+	echo $raw | \
+sed 's/\:\ \[/\:\[\n/g' | \
+sed 's/},\ {/}\n\n\n{/g' | \
+sed 's/},\ /}\n{/g' | \
+sed 's/,\ /,\n/g' |\
+sed 's/\]\}/\n\]\}/g' |\
+sed 's/[]|{|}|,| |[]//g'
+}
 
-get_app_list
+info=`get_app_list`
+## id
+echo $info | json | grep '^"id"'
+echo $info | json | grep '^"name"'
+
+# get_project_list
