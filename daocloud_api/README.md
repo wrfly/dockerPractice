@@ -22,7 +22,7 @@
 - `restart [AppName|AppID]`  重启应用
 - `redeploy [AppName|AppID] [ReleaseName]`  重新部署应用
 - `action [ActionID]`  查看某个action执行结果
-- `acrions`  查看所有action
+- `actions`  查看所有action
 - `limits`  查看API调用限制剩余
 - `history`  默认列出5条历史命令
 	- `history -a`  列出全部历史命令
@@ -38,7 +38,7 @@ sudo docker run -dti daocloud_api [Your Token]
 ```
 OR
 
-Install jq and bsdmainutils first.
+Install `jq` and `bsdmainutils` first.
 ```bash
 bash dao.sh [Your Token]
 ```
