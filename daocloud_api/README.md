@@ -52,3 +52,21 @@ Shell编程就是没有Python简单，以后会用Python重写。
 代码写的不够精致，还请各位师傅批评指正。
 
 DaoCloud 开放API: <http://docs.daocloud.io/api/>
+
+## Some Images
+
+![ls](img/ls.png)
+
+![ls id](img/ls-id.png)
+
+![ls -v](img/ls-v.png)
+
+![ls project](img/lsp.png)
+
+![ls -pv](img/ls-pv.png)
+
+![stop](img/stop.png)
+
+![action](img/action.png)
+
+![limits and history](img/lh.png)
