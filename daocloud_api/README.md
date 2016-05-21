@@ -1,9 +1,9 @@
 # Daocloud API CLI tool
 
 ## Comments
-- [AppName|AppID] 应用名称或ID，输入前几个字符即可，脚本自动寻找补全
-- [ProjectName|ProjectID] 构建代码的名称或ID，同上
-- [ActionID] Action返回的ID，同上，通过`actions`查看
+- `[AppName|AppID]` 应用名称或ID，输入前几个字符即可，脚本自动寻找补全
+- `[ProjectName|ProjectID]` 构建代码的名称或ID，同上
+- `[ActionID]` Action返回的ID，同上，通过`actions`查看
 
 ## Commands
 - `ls` 默认列出所有应用信息
