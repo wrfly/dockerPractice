@@ -1,7 +1,7 @@
 #!/bin/bash
 # A tool to handle daocoud api.
 # Author Wrfly mr.wrfly@gmail.com
-# Install [jq](https://stedolan.github.io/jq/) and bsdmainutils(debain) first
+# Install [jq](https://stedolan.github.io/jq/) and bsdmainutils(`apt-get install bsdmainutils` for debian) first
 
 
 # Configs
