@@ -27,7 +27,7 @@ function Error(){
   esac
 }
 function checkheader(){
-  rcode=$(cat .$1.header | head -n 1 | cut -d ' ' -f 2)
+  rcode=$(cat /tmp/DaoCloudCliAPI/.$1.header | head -n 1 | cut -d ' ' -f 2)
   [[ "$rcode" -ne 200 ]] && Error $rcode && return 2
   return 0
 }
@@ -36,7 +36,7 @@ function checkheader(){
 # Build flows
 Build_flow="$BaseURL/v1/build-flows"  #代码构建 Build Flow
 function get_project_list(){
-  curl -sS "$Build_flow" -H "$Auth" -D .project_list.header #获取项目列表
+  curl -sS "$Build_flow" -H "$Auth" -D /tmp/DaoCloudCliAPI/.project_list.header #获取项目列表
 }
 function get_project_id_by_id(){
   echo $project_list \
@@ -70,13 +70,13 @@ function get_project_id(){
 function get_project_info(){
   ID=$1
   Build_flow_info="${Build_flow}/${ID}" #获取单个项目
-  curl -sS -H "$Auth" "$Build_flow_info" -D project_info.header
+  curl -sS -H "$Auth" "$Build_flow_info" -D /tmp/DaoCloudCliAPI/.project_info.header
 }
 function build_project(){
   ID=$1
   branch=${2-master}
   Build_flow_build="${Build_flow}/${ID}/builds"  #手动构建项目 POST 
-  curl -sS -X POST -H "$Auth" "$Build_flow_build" -d "{\"branch\":\"$branch\"}" -H "Content-type: application/json" -D build_project.header
+  curl -sS -X POST -H "$Auth" "$Build_flow_build" -d "{\"branch\":\"$branch\"}" -H "Content-type: application/json" -D /tmp/DaoCloudCliAPI/.build_project.header
 }
 function _list_project(){
   mode=$2
@@ -124,12 +124,12 @@ function _build_project(){
 ## Apps
 App_list="$BaseURL/v1/apps" #获取用户的 app 列表.
 function get_app_list(){
-  curl -sS "$BaseURL/v1/apps" -H "$Auth" -D .app_list.header
+  curl -sS "$BaseURL/v1/apps" -H "$Auth" -D /tmp/DaoCloudCliAPI/.app_list.header
 }
 function get_app_info(){
   app_id=$1
   App_info="$App_list/${app_id}" #App 信息 (GET)
-  curl -sS "$App_info" -H "$Auth" -D .app_info.header
+  curl -sS "$App_info" -H "$Auth" -D /tmp/DaoCloudCliAPI/.app_info.header
 }
 function get_app_id_by_name(){
   # by name
@@ -175,7 +175,7 @@ function app_actions(){
   function log(){
     [[ "$action_id" == 'null' ]] \
     && echo $_return | jq '.' \
-    || echo -e "$(get_app_name_by_id $app_id)\t$action\t$action_id\t$app_id" >> .actions.log
+    || echo -e "$(get_app_name_by_id $app_id)\t$action\t$action_id\t$app_id" >> /tmp/DaoCloudCliAPI/.actions.log
   }
   case "$action" in
     "start"|"stop"|"restart" )
@@ -183,7 +183,7 @@ function app_actions(){
       # App_stop="$App_list/${app_id}/actions/stop" #停止 App (POST)
       # App_restart="$App_list/${app_id}/actions/restart" #重启 App (POST)
       echo "${action}ing $app_name..."
-      _return=$(curl -sS -X POST "$App_list/${app_id}/actions/$action" -H "$Auth" -D .$action.header)
+      _return=$(curl -sS -X POST "$App_list/${app_id}/actions/$action" -H "$Auth" -D /tmp/DaoCloudCliAPI/.$action.header)
       action_id=$(echo $_return | jq '.action_id' 2>/dev/null)
       checkheader $action && log
       ;;
@@ -195,20 +195,20 @@ function app_actions(){
       _return=$(curl -sS -X POST "$App_redeploy" -H "$Auth" \
         -H "Content-Type: application/json" \
         -d "{\"release_name\": \"$release_name\"}" \
-        -D .$action.header)
+        -D /tmp/DaoCloudCliAPI/.$action.header)
       action_id=$(echo $_return | jq '.action_id' 2>/dev/null)
       { checkheader $action; } && log
       ;;
     "action" )
       action_id=$2
-      tmp=$(cut -d '"' -f 4- .actions.log|egrep ^$action_id | tail -n 1)
+      tmp=$(cut -d '"' -f 4- /tmp/DaoCloudCliAPI/.actions.log|egrep ^$action_id | tail -n 1)
       [[ -z $tmp ]] && { echo "There's no this action, please check."; return 1; }
-      [[ -z "$action_id" ]] && tmp=$(cut -d '"' -f 4- .actions.log|tail -n 1)
+      [[ -z "$action_id" ]] && tmp=$(cut -d '"' -f 4- /tmp/DaoCloudCliAPI/.actions.log|tail -n 1)
       action_id=${tmp:0:36}
       app_id=${tmp:38}
 
       App_action_status="$App_list/${app_id}/actions/${action_id}" #获取事件信息
-      curl -sS "$App_action_status" -H "$Auth" -D .action_status.header | jq "." 2>/dev/null
+      curl -sS "$App_action_status" -H "$Auth" -D /tmp/DaoCloudCliAPI/.action_status.header | jq "." 2>/dev/null
       checkheader action_status
       ;;
       *)
@@ -255,17 +255,16 @@ function _update_list(){
 }
 function _history(){
   mode=$1
-  [[ "$mode" == '-a' ]] && cat -n .history.log || cat -n .history.log | tail -n 5
+  [[ "$mode" == '-a' ]] && cat -n /tmp/DaoCloudCliAPI/.history.log || cat -n /tmp/DaoCloudCliAPI/.history.log | tail -n 5
 }
 function _limits(){
-  echo -e "API\t\tRemaining"
-  echo -n > .limits.txt
-  for i in .*.header;do
+  echo -e "API Remaining" > /tmp/DaoCloudCliAPI/.limits.txt
+  for i in /tmp/DaoCloudCliAPI/.*.header;do
     re=$(cat  $i|grep Remaining | cut -d' ' -f2)
-    echo -n ${i//.header} | sed 's/.*/\L&/; s/[a-z]*/\u&/g' | tr -d '.' >> .limits.txt
-    echo ": ${re:-Wrong}" >> .limits.txt
+    echo -n ${i//.header} | sed 's/.*/\L&/; s/[a-z]*/\u&/g' | sed 's/.*\.//g' >> /tmp/DaoCloudCliAPI/.limits.txt
+    echo ": ${re:-Wrong}" >> /tmp/DaoCloudCliAPI/.limits.txt
   done
-  cat .limits.txt | column -t
+  cat /tmp/DaoCloudCliAPI/.limits.txt | column -t
 }
 function _ls(){
   opt=$@
@@ -309,17 +308,44 @@ function quit(){
   read -p "Really?" -e YN
   [[ "$YN" =~ ^[y|Y]$ ]] && exit 0 || return 0
 }
+function _help(){
+  echo """
+    - ls 默认列出所有应用信息
+        - ls [AppName|AppID] 列出某个应用信息
+        - ls -v     列出所有应用信息详细模式
+        - ls -v [AppName|AppID] 列出某个应用的详细信息
+        - ls -p     列出所有构建代码项目
+        - ls -pv    详细模式
+        - ls -pvv   超详细模式
+        - ls -p [ProjectName|ProjectID] 列出某个项目的信息
+        - ls -pv [ProjectName|ProjectID] 列出某个项目的详细信息
+        - ls -pvv [ProjectName|ProjectID] 列出某个项目的超详细信息
+    - build [ProjectName|ProjectID] [branch:-master] 构建代码，默认分支名为master
+    - start [AppName|AppID] 启动应用
+    - stop [AppName|AppID] 停止应用
+    - restart [AppName|AppID] 重启应用
+    - redeploy [AppName|AppID] [ReleaseName] 重新部署应用
+    - action [ActionID] 查看某个action执行结果
+    - acrions 查看所有action
+    - limits 查看API调用限制剩余
+    - history 默认列出5条历史命令
+      - history -a 列出全部历史命令
+    - clear 清空历史记录和action记录
+    - update 更新应用及项目信息
+    - q|quit 退出
+"""
+}
+
 function readline(){
   read -p ">_" -e cmd arg1 arg2 arg3 arg4 arg5
   hcmd=$(echo $cmd $arg1 $arg2 $arg3 $arg4 $arg5)
   [[ -z "$cmd" ]] || history -s "$hcmd"
   if [[ "$cmd" != '' && "$cmd" != "history" ]]; then
-    echo "$cmd $arg1 $arg2 $arg3 $arg4 $arg5" >> .history.log
+    echo "$cmd $arg1 $arg2 $arg3 $arg4 $arg5" >> /tmp/DaoCloudCliAPI/.history.log
   fi
 }
 
 function main(){
-  _update_list
   while : ; do
     readline
     case "$cmd" in
@@ -339,23 +365,31 @@ function main(){
         _history $arg1
         ;;
       "actions") # Get app actions
-        cat .actions.log | column -t
+        cat /tmp/DaoCloudCliAPI/.actions.log | column -t
         ;;
       "clear"  ) # Clear logs 
-        echo -e "App_Name\tAction\tAction_ID\tApp_ID" > .actions.log 
-        echo -n > .history.log
+        echo -e "App_Name\tAction\tAction_ID\tApp_ID" > /tmp/DaoCloudCliAPI/.actions.log 
+        echo -n > /tmp/DaoCloudCliAPI/.history.log
         ;;
       "update" ) _update_list ;;
       "q"| "quit")
         quit
         ;;
-      \? | "help") echo "Usage: ls, build, [start|stop|restart|redeploy], action, actions, limits, history, clear, update, [quit|q]";;
+      \? | "help") _help;;
       *) ;;
     esac
     unset cmd arg1 arg2 arg3 arg4 arg5
   done
 }
 
-trap quit INT # disable Ctl-c
-touch ls start stop restart action actions limits history help quit update clear redeploy build # auto complete
+function prepare(){  
+  trap quit INT # disable Ctl-c
+  mkdir /tmp/DaoCloudCliAPI/ &> /dev/null
+  touch ls start stop restart action actions limits history help quit update clear redeploy build # auto complete
+  echo -e "App_Name\tAction\tAction_ID\tApp_ID" > /tmp/DaoCloudCliAPI/.actions.log
+  touch /tmp/DaoCloudCliAPI/.history.log
+  _update_list
+}
+
+prepare
 main
