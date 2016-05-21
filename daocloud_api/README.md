@@ -45,5 +45,7 @@ P.S.: Default token is a public account, feel free to test it.
 
 ## About
 一次练手的脚本编程，通过`jq`解析`json`字符串，通过curl发起请求。
+
 Shell编程就是没有Python简单，以后会用Python重写。
+
 代码写的不够精致，还请各位师傅批评指正。
