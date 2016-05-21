@@ -1,4 +1,4 @@
-# Daocloud API CLI tool
+# DaoCloud API CLI tool
 
 ## Comments
 - `[AppName|AppID]` 应用名称或ID，输入前几个字符即可，脚本自动寻找补全
@@ -38,6 +38,7 @@ sudo docker run -dti daocloud_api [Your Token]
 ```
 OR
 
+Install jq and bsdmainutils first.
 ```bash
 bash dao.sh [Your Token]
 ```
