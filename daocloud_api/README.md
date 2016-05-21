@@ -1,4 +1,4 @@
-# DaoCloud API CLI tool
+# DaoCloud API CLI Tool
 
 ## Comments
 - `[AppName|AppID]` 应用名称或ID，输入前几个字符即可，脚本自动寻找补全
