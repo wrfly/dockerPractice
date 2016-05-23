@@ -342,7 +342,7 @@ function readline(){
   hcmd=$(echo $cmd $arg1 $arg2 $arg3 $arg4 $arg5)
   [[ -z "$cmd" ]] || history -s "$hcmd"
   if [[ "$cmd" != '' && "$cmd" != "history" ]]; then
-    echo "$cmd $arg1 $arg2 $arg3 $arg4 $arg5" >> /tmp/DaoCloudCliAPI/.history.log
+    echo "$hcmd" >> /tmp/DaoCloudCliAPI/.history.log
   fi
 }
 
