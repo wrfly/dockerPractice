@@ -338,11 +338,10 @@ function _help(){
 }
 
 function readline(){
-  read -p ">_" -e cmd arg1 arg2 arg3 arg4 arg5
-  hcmd=$(echo $cmd $arg1 $arg2 $arg3 $arg4 $arg5)
-  [[ -z "$cmd" ]] || history -s "$hcmd"
+  read -p ">_" -e -a cmd
+  [[ -z "$cmd" ]] || history -s "${cmd[*]}"
   if [[ "$cmd" != '' && "$cmd" != "history" ]]; then
-    echo "$hcmd" >> /tmp/DaoCloudCliAPI/.history.log
+    echo "${cmd[*]}" >> /tmp/DaoCloudCliAPI/.history.log
   fi
 }
 
@@ -351,19 +350,19 @@ function main(){
     readline
     case "$cmd" in
       "ls") # List app or projects or get their info
-        _ls $arg1 $arg2 $arg3 $arg4 $arg5
+        _ls ${cmd[*]:1}
         ;;
       "build") # Build project
-        _build_project $arg1 $arg2 $arg3 $arg4 $arg5
+        _build_project ${cmd[*]:1}
         ;;
       "start" | "stop" | "restart" | "redeploy" | "action")
-        app_actions $cmd $arg1 $arg2 $arg3 $arg4 $arg5
+        app_actions ${cmd[*]}
         ;;
       "limits" ) # Get the limits
         _limits
         ;;
       "history") # Get command history
-        _history $arg1
+        _history ${cmd[*]:1}
         ;;
       "actions") # Get app actions
         cat /tmp/DaoCloudCliAPI/.actions.log | column -t
@@ -379,7 +378,7 @@ function main(){
       \? | "help") _help;;
       *) ;;
     esac
-    unset cmd arg1 arg2 arg3 arg4 arg5
+    unset cmd
   done
 }
 
