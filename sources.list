@@ -1,0 +1,10 @@
+deb http://ftp.xdlinux.info/ubuntu/ trusty main restricted universe multiverse
+deb http://ftp.xdlinux.info/ubuntu/ trusty-security main restricted universe multiverse
+deb http://ftp.xdlinux.info/ubuntu/ trusty-updates main restricted universe multiverse
+deb http://ftp.xdlinux.info/ubuntu/ trusty-proposed main restricted universe multiverse
+deb http://ftp.xdlinux.info/ubuntu/ trusty-backports main restricted universe multiverse
+deb-src http://ftp.xdlinux.info/ubuntu/ trusty main restricted universe multiverse
+deb-src http://ftp.xdlinux.info/ubuntu/ trusty-security main restricted universe multiverse
+deb-src http://ftp.xdlinux.info/ubuntu/ trusty-updates main restricted universe multiverse
+deb-src http://ftp.xdlinux.info/ubuntu/ trusty-proposed main restricted universe multiverse
+deb-src http://ftp.xdlinux.info/ubuntu/ trusty-backports main restricted universe multiverse
