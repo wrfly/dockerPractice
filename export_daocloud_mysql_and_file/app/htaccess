@@ -1,2 +1,8 @@
 Options +Indexes
 IndexOptions FancyIndexing FoldersFirst SuppressIcon
+
+<FilesMatch "\.(.+)$">
+  Order allow,deny
+  Allow from all
+  Satisfy any
+</FilesMatch>
