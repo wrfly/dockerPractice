@@ -1,0 +1,168 @@
+version: '2'
+services:
+# config server
+  mongoc1:
+    image: mongo:3.2
+    environment:
+      - ROLE=config1
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10
+    volumes:
+      - mongoc1_data_db:/data/db
+      - mongoc1_data_conf:/data/configdb
+  mongoc2:
+    image: mongo:3.2
+    environment:
+      - ROLE=config2
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10
+    volumes:
+      - mongoc2_data_db:/data/db
+      - mongoc2_data_conf:/data/configdb
+  mongoc3:
+    image: mongo:3.2
+    environment:
+      - ROLE=config3
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10
+    volumes:
+      - mongoc3_data_db:/data/db
+      - mongoc3_data_conf:/data/configdb
+
+# shard 1
+  mongod_s1r1:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s1r1_log
+    command: mongod --shardsvr --replSet shard1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r1_data_db:/data/db
+      - mongod_s1r1_data_conf:/data/configdb
+  mongod_s1r2:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s1r2_log
+    command: mongod --shardsvr --replSet shard1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r2_data_db:/data/db
+      - mongod_s1r2_data_conf:/data/configdb
+  mongod_s1r3:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s1r3_log
+    command: mongod --shardsvr --replSet shard1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r3_data_db:/data/db
+      - mongod_s1r3_data_conf:/data/configdb
+
+# shard 2
+  mongod_s2r1:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s2r1_log
+    command: mongod --shardsvr --replSet shard2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r1_data_db:/data/db
+      - mongod_s2r1_data_conf:/data/configdb
+  mongod_s2r2:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s2r2_log
+    command: mongod --shardsvr --replSet shard2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r2_data_db:/data/db
+      - mongod_s2r2_data_conf:/data/configdb
+  mongod_s2r3:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s2r3_log
+    command: mongod --shardsvr --replSet shard2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r3_data_db:/data/db
+      - mongod_s2r3_data_conf:/data/configdb
+
+# shard 3
+  mongod_s3r1:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s3r1_log
+    command: mongod --shardsvr --replSet shard3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r1_data_db:/data/db
+      - mongod_s3r1_data_conf:/data/configdb
+  mongod_s3r2:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s3r2_log
+    command: mongod --shardsvr --replSet shard3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r2_data_db:/data/db
+      - mongod_s3r2_data_conf:/data/configdb
+  mongod_s3r3:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongod_s3r3_log
+    command: mongod --shardsvr --replSet shard3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 # --auth --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r3_data_db:/data/db
+      - mongod_s3r3_data_conf:/data/configdb
+
+# finally startup mongos
+  mongos1:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongos1
+    ports:
+      - 27017
+    command: mongos --configdb mongoc1:27017,mongoc2:27017,mongoc3:27017 --port 27017
+    volumes:
+      - mongos1_data_db:/data/db
+      - mongos1_data_conf:/data/configdb
+  mongos2:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongos2
+    ports:
+      - 27017
+    command: mongos --configdb mongoc1:27017,mongoc2:27017,mongoc3:27017 --port 27017
+    volumes:
+      - mongos2_data_db:/data/db
+      - mongos2_data_conf:/data/configdb
+  mongos3:
+    image: mongo:3.2
+    environment:
+      - ROLE=mongos3
+    ports:
+      - 27017
+    command: mongos --configdb mongoc1:27017,mongoc2:27017,mongoc3:27017 --port 27017
+    volumes:
+      - mongos3_data_db:/data/db
+      - mongos3_data_conf:/data/configdb
+volumes:
+  mongos1_data_db:
+  mongos1_data_conf:
+  mongos2_data_db:
+  mongos2_data_conf:
+  mongos3_data_db:
+  mongos3_data_conf:
+  mongoc1_data_db:
+  mongoc1_data_conf:
+  mongoc2_data_db:
+  mongoc2_data_conf:
+  mongoc3_data_db:
+  mongoc3_data_conf:
+  mongod_s1r1_data_db:
+  mongod_s1r1_data_conf:
+  mongod_s1r2_data_db:
+  mongod_s1r2_data_conf:
+  mongod_s1r3_data_db:
+  mongod_s1r3_data_conf:
+  mongod_s2r1_data_db:
+  mongod_s2r1_data_conf:
+  mongod_s2r2_data_db:
+  mongod_s2r2_data_conf:
+  mongod_s2r3_data_db:
+  mongod_s2r3_data_conf:
+  mongod_s3r1_data_db:
+  mongod_s3r1_data_conf:
+  mongod_s3r2_data_db:
+  mongod_s3r2_data_conf:
+  mongod_s3r3_data_db:
+  mongod_s3r3_data_conf:
