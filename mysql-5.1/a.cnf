@@ -1,0 +1,40 @@
+[mysqld]
+port            = 3306
+socket          = /var/lib/mysql/mysql.sock
+skip-locking
+
+key_buffer = 16K
+query_cache_limit = 256K
+query_cache_size = 2M
+max_allowed_packet = 1M
+table_cache = 8
+
+max_connections = 16
+thread_concurrency = 2
+
+sort_buffer_size = 64K
+read_buffer_size = 256K
+read_rnd_buffer_size = 256K
+net_buffer_length = 2K
+thread_stack = 64K
+
+skip-innodb
+
+[mysqldump]
+quick
+max_allowed_packet = 8M
+
+[mysql]
+no-auto-rehash
+#safe-updates
+
+[isamchk]
+key_buffer = 4M
+sort_buffer_size = 4M
+
+[myisamchk]
+key_buffer = 4M
+sort_buffer_size = 4M
+
+[mysqlhotcopy]
+interactive-timeout

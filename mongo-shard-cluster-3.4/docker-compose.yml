@@ -1,0 +1,253 @@
+version: '2'
+services:
+# config server
+  mongoc1:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongoc1
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=config1
+      - CONFIG=1
+      - RS=Config
+      - ADDRESS=mongoc2:27017,mongoc3:27017
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10 --keyFile /etc/mongo_key --replSet rsConfig
+    volumes:
+      - mongoc1_data_db:/data/db
+      - mongoc1_data_conf:/data/configdb
+  mongoc2:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongoc2
+      - ROLE=config2
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10 --keyFile /etc/mongo_key --replSet rsConfig
+    volumes:
+      - mongoc2_data_db:/data/db
+      - mongoc2_data_conf:/data/configdb
+  mongoc3:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongoc3
+      - ROLE=config3
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --configsvr --dbpath /data/db --port 27017 --oplogSize 10 --keyFile /etc/mongo_key --replSet rsConfig
+    volumes:
+      - mongoc3_data_db:/data/db
+      - mongoc3_data_conf:/data/configdb
+
+# rs 1
+  mongod_s1r1:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s1r1
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongod_s1r1
+      - RS=1
+      - PRIMARY=1
+      - ADDRESS=mongod_s1r2:27017,mongod_s1r3:27017
+    command: mongod --shardsvr --replSet rs1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r1_data_db:/data/db
+      - mongod_s1r1_data_conf:/data/configdb
+  mongod_s1r2:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s1r2
+      - ROLE=mongod_s1r2
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r2_data_db:/data/db
+      - mongod_s1r2_data_conf:/data/configdb
+  mongod_s1r3:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s1r3
+      - ROLE=mongod_s1r3
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs1 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s1r3_data_db:/data/db
+      - mongod_s1r3_data_conf:/data/configdb
+
+# rs 2
+  mongod_s2r1:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s2r1
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongod_s2r1
+      - RS=2
+      - PRIMARY=1
+      - ADDRESS=mongod_s2r2:27017,mongod_s2r3:27017
+    command: mongod --shardsvr --replSet rs2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r1_data_db:/data/db
+      - mongod_s2r1_data_conf:/data/configdb
+  mongod_s2r2:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s2r2
+      - ROLE=mongod_s2r2
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r2_data_db:/data/db
+      - mongod_s2r2_data_conf:/data/configdb
+  mongod_s2r3:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s2r3
+      - ROLE=mongod_s2r3
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs2 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s2r3_data_db:/data/db
+      - mongod_s2r3_data_conf:/data/configdb
+
+# rs 3
+  mongod_s3r1:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s3r1
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongod_s3r1
+      - RS=3
+      - PRIMARY=1
+      - ADDRESS=mongod_s3r2:27017,mongod_s3r3:27017
+    command: mongod --shardsvr --replSet rs3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r1_data_db:/data/db
+      - mongod_s3r1_data_conf:/data/configdb
+  mongod_s3r2:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s3r2
+      - ROLE=mongod_s3r2
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r2_data_db:/data/db
+      - mongod_s3r2_data_conf:/data/configdb
+  mongod_s3r3:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongod_s3r3
+      - ROLE=mongod_s3r3
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+    command: mongod --shardsvr --replSet rs3 --port 27017 --dbpath /data/db --nojournal --oplogSize 10 --keyFile /etc/mongo_key
+    volumes:
+      - mongod_s3r3_data_db:/data/db
+      - mongod_s3r3_data_conf:/data/configdb
+
+# finally startup mongos
+  mongos1:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongos1
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongos1
+      - MONGOS=1
+      - S_PRIMARY=1
+      - RS=1
+      - ADDRESS=mongoc1:27017,mongoc2:27017,mongoc3:27017,mongod_s1r1:27017,mongod_s2r1:27017,mongod_s3r1:27017
+    ports:
+      - 27017
+    command: mongos --keyFile /etc/mongo_key --configdb rsConfig/mongoc3:27017,mongoc2:27017,mongoc1:27017
+    volumes:
+      - mongos1_data_db:/data/db
+      - mongos1_data_conf:/data/configdb
+  mongos2:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongos2
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongos2
+      - MONGOS=1
+      - RS=2
+      - ADDRESS=mongoc1:27017,mongoc2:27017,mongoc3:27017,mongod_s1r1:27017,mongod_s2r1:27017,mongod_s3r1:27017
+    ports:
+      - 27017
+    command: mongos --keyFile /etc/mongo_key --configdb rsConfig/mongoc3:27017,mongoc2:27017,mongoc1:27017
+    volumes:
+      - mongos2_data_db:/data/db
+      - mongos2_data_conf:/data/configdb
+  mongos3:
+    image: mongo:3.4-with-auth
+    environment:
+      - HOSTNAME=mongos3
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=pass
+      - ROLE=mongos3
+      - MONGOS=1
+      - RS=3
+      - ADDRESS=mongoc1:27017,mongoc2:27017,mongoc3:27017,mongod_s1r1:27017,mongod_s2r1:27017,mongod_s3r1:27017
+    ports:
+      - 27017
+    command: mongos --keyFile /etc/mongo_key --configdb rsConfig/mongoc3:27017,mongoc2:27017,mongoc1:27017
+    volumes:
+      - mongos3_data_db:/data/db
+      - mongos3_data_conf:/data/configdb
+  express:
+      image: mongo-express:with-shard
+      labels:
+          - "io.daocloud.dce.service.console=true"
+      ports:
+          - 8081
+      environment:
+          - ME_CONFIG_MONGODB_SERVER=mongos1
+          - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+          - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+          - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+          - ME_CONFIG_MONGODB_AUTH_USERNAME=admin
+          - ME_CONFIG_MONGODB_AUTH_PASSWORD=pass
+          - ME_CONFIG_BASICAUTH_USERNAME=admin
+          - ME_CONFIG_BASICAUTH_PASSWORD=pass
+          - USERNAME=admin
+          - PASSWORD=pass
+          - ADDRESS=mongos1:27017,mongos2:27017,mongos3:27017
+volumes:
+  mongos1_data_db:
+  mongos1_data_conf:
+  mongos2_data_db:
+  mongos2_data_conf:
+  mongos3_data_db:
+  mongos3_data_conf:
+  mongoc1_data_db:
+  mongoc1_data_conf:
+  mongoc2_data_db:
+  mongoc2_data_conf:
+  mongoc3_data_db:
+  mongoc3_data_conf:
+  mongod_s1r1_data_db:
+  mongod_s1r1_data_conf:
+  mongod_s1r2_data_db:
+  mongod_s1r2_data_conf:
+  mongod_s1r3_data_db:
+  mongod_s1r3_data_conf:
+  mongod_s2r1_data_db:
+  mongod_s2r1_data_conf:
+  mongod_s2r2_data_db:
+  mongod_s2r2_data_conf:
+  mongod_s2r3_data_db:
+  mongod_s2r3_data_conf:
+  mongod_s3r1_data_db:
+  mongod_s3r1_data_conf:
+  mongod_s3r2_data_db:
+  mongod_s3r2_data_conf:
+  mongod_s3r3_data_db:
+  mongod_s3r3_data_conf:
