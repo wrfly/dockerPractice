@@ -1,0 +1,6 @@
+FROM daocloud.io/daocloud/mongo-express 
+VOLUME /mark
+COPY express.sh portcheck /
+RUN chmod +x /express.sh
+RUN chmod +x /portcheck
+ENTRYPOINT /express.sh
